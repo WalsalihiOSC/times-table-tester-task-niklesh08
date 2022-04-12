@@ -1,44 +1,73 @@
 #Write a times table tester with a GUI
 
-from tkinter import *
-
-def quit():
-    main_window.destroy()
-
-def details():
-    global total_entries, name_count, details
+import random
+import tkinter as tk
 
 
+class TimesTableGUI:
+    def __init__(self):
+        main_frame = tk.Frame_root
+        main_frame.pack()
+        self.backend = TimesTableClass()
+        self.answer_var = tk.IntVar()
 
-#Create Column Headings
-    name_count = 0 
-    Label(main_window, font=("Helvetica 10 bold"), text="Check Answer").grid(column = 2, row = 10)
-    Label(main_window, font=("Helvetica 10 bold"), text="Next").grid(column = 3, row = 10)
+        self.question_label = tk.Label(main_frame, text=self.backend.create_question()[2])
+        self.question_label.grid()
 
-    while name_count < total_entries:
-       Label(main_window, text=(details[name_count][0])).grid(column=1,row=name_count+11)
-       Label(main_window, text=(details[name_count][1])).grid(column=2,row=name_count+11)
-       main_window.geometry("")
-       name_count +=1
+        self.answer= tk.Entry(main_frame, textvariable=self.answer_var)
+        self.answer.grid(row = 2, column = 0)
 
-       if len(re.findall(r'\w+', entry_name.get())) == 0:
-        entry_name_blank.destroy()
-        entry_name_first.destroy()
-        entry_name_blank = Label(main_window,fg="red", text="Sorry - this can't be blank, please enter the customers Full Name")
-        entry_name_blank.grid(row=4, column=2)
+        check_answer_box = tk.Button(main_frame, text = "Cal", command = self.configure_label)
+        check_answer_box.grid(row = 2, column = 0)
+
+        next_question_box = tk.Button(main_frame, text = "Next",command = self.next)
+        next_question_box.grid(row = 3, column = 1)
+
+        check_label = tk.Label(main_frame, text = "")
+        check_label.grid(row = 3, column =0)
+
+        self.answer_label = tk.Label(main_frame, text = "")
+        self.answer.grid(row = 4, column =0)
+
+        def configure_label(self):
+            bool_a = self.backend.check_answer(self.answer_var)
+            if bool_a == 1:
+                self.answer_label.configure(text = "Correct")
+            elif bool_a == 0:
+                self.answer_label.configure(text = "Incorrect {self.backend.get_answer()}")
+            else:
+                self.answer_label.configure(text = "")
+
+        def next(self):
+            self.question_label.configure(text = self.backend.create_question()[2])
+            self.answer.delete(0, tk.end)
 
 
+class TimesTableClass:
+    def __init__(self):
+        pass
+    def check_answer(self, input):
+        if int(input.get()) == self.answer:
+            return 1
+        else:
+            return 0
 
-def main()
-#Create GUI
-main_window = Tk()
-GUI()
-PlaceHolder()
+    def create_question(self):
+        self.number_1 = random.randint(1,10)
+        self.number_2 = random.randint(1,10)
+        self.answer = self.number_1 * self.number_2
+        question = f"{self.number_1} * {self.number_2}"
+        return (self.number_1, self.number_2, question)
+    def get_answer(self):
+        return self.answer
 
-main_window.title("Times Table Tester")
 
-main_window.mainloop()
+if __name__ == '__main__':
+    root = tk.TK()
+    root.geometry('200x100')
+    root.title("Times Table Tester")
+    TimesTableGUI()
+    root.mainloop()
 
-main()
 
 
